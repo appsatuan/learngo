@@ -1,0 +1,58 @@
+<!-- frontend/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go API Frontend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .loader {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Go API Frontend</h1>
+    <button id="loadLoadersBtn">Load Loaders</button>
+    <div id="loadersList"></div>
+    <div class="loader" id="loadingMessage" style="display: none;">Loading...</div>
+    <div class="error" id="errorMessage" style="display: none;"></div>
+
+    <script>
+        document.getElementById('loadLoadersBtn').addEventListener('click', async function() {
+            document.getElementById('loadingMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('loadersList').innerHTML = '';
+
+            try {
+                const response = await fetch('http://localhost:1234/');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch loaders');
+                }
+                const data = await response.json();
+
+                const loaders = data.loaders;
+                let htmlContent = '<ul>';
+                loaders.forEach(loader => {
+                    htmlContent += `<li>ID: ${loader.id}, Value: ${loader.value}, Timestamp: ${loader.timestamp}</li>`;
+                });
+                htmlContent += '</ul>';
+                document.getElementById('loadersList').innerHTML = htmlContent;
+            } catch (error) {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = 'Error: ' + error.message;
+            } finally {
+                document.getElementById('loadingMessage').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
